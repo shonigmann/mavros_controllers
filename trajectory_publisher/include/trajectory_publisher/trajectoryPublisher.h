@@ -17,6 +17,9 @@
 #include <std_srvs/SetBool.h>
 #include <nav_msgs/Path.h>
 #include <mavros_msgs/PositionTarget.h>
+#include <mav_planning_msgs/PolynomialTrajectory4D.h>
+#include <trajectory_msgs/MultiDOFJointTrajectory.h>
+#include <trajectory_msgs/MultiDOFJointTrajectoryPoint.h>
 #include "controller_msgs/FlatTarget.h"
 #include "trajectory_publisher/trajectory.h"
 #include "trajectory_publisher/polynomialtrajectory.h"
@@ -36,6 +39,7 @@ private:
   ros::Publisher referencePub_;
   ros::Publisher flatreferencePub_;
   ros::Publisher rawreferencePub_;
+  ros::Publisher jointtrajectoryPub_;
   std::vector<ros::Publisher> primitivePub_;
   ros::Subscriber motionselectorSub_;
   ros::Subscriber mavposeSub_;
@@ -83,6 +87,7 @@ public:
   void motionselectorCallback(const std_msgs::Int32& selector);
   void mavposeCallback(const geometry_msgs::PoseStamped& msg);
   void mavtwistCallback(const geometry_msgs::TwistStamped& msg);
+  trajectory_msgs::MultiDOFJointTrajectory getMultiDofTrajectoryPoints(nav_msgs::Path trajectory);
 
   };
 
