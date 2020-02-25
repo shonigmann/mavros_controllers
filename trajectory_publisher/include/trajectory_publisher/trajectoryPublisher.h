@@ -16,14 +16,17 @@
 #include <geometry_msgs/PoseStamped.h>
 #include <std_srvs/SetBool.h>
 #include <nav_msgs/Path.h>
+#include <mavros_msgs/CompanionProcessStatus.h>
 #include <mavros_msgs/PositionTarget.h>
+#include <mavros_msgs/Trajectory.h>
 #include "controller_msgs/FlatTarget.h"
 #include "trajectory_publisher/trajectory.h"
 #include "trajectory_publisher/polynomialtrajectory.h"
 #include "trajectory_publisher/shapetrajectory.h"
 
 #define REF_TWIST 8
-#define REF_SETPOINTRAW 16
+#define REF_SETPOINT_RAW 16
+#define REF_SETPOINT_TRAJ 32
 
 using namespace std;
 using namespace Eigen;
@@ -32,15 +35,21 @@ class trajectoryPublisher
 private:
   ros::NodeHandle nh_;
   ros::NodeHandle nh_private_;
+  
   ros::Publisher trajectoryPub_;
   ros::Publisher referencePub_;
   ros::Publisher flatreferencePub_;
   ros::Publisher rawreferencePub_;
+  ros::Publisher trajreferencePub_;
+  ros::Publisher systemstatusPub_;
   std::vector<ros::Publisher> primitivePub_;
+  
   ros::Subscriber motionselectorSub_;
   ros::Subscriber mavposeSub_;
   ros::Subscriber mavtwistSub_;
+  
   ros::ServiceServer trajtriggerServ_;
+  
   ros::Timer trajloop_timer_;
   ros::Timer refloop_timer_;
   ros::Time start_time_, curr_time_;
@@ -48,10 +57,10 @@ private:
   nav_msgs::Path refTrajectory_;
   nav_msgs::Path primTrajectory_;
 
-  int trajectory_type_;
   Eigen::Vector3d p_targ, v_targ, a_targ;
   Eigen::Vector3d p_mav_, v_mav_;
   Eigen::Vector3d shape_origin_, shape_axis_;
+  
   double shape_omega_ = 0;
   double theta_ = 0.0;
   double controlUpdate_dt_;
@@ -59,6 +68,8 @@ private:
   double trigger_time_;
   double init_pos_x_, init_pos_y_, init_pos_z_;
   double max_jerk_;
+
+  int trajectory_type_;
   int pubreference_type_;
   int num_primitives_;
   int motion_selector_;
@@ -75,6 +86,8 @@ public:
   void pubrefState();
   void pubflatrefState();
   void pubrefSetpointRaw();
+  void pubSetpointTraj();
+  void pubSystemStatus();
   void initializePrimitives(int type);
   void updatePrimitives();
   void loopCallback(const ros::TimerEvent& event);

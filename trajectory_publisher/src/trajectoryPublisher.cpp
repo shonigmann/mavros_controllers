@@ -6,6 +6,19 @@
 
 using namespace std;
 using namespace Eigen;
+
+enum class MAV_STATE {
+  MAV_STATE_UNINIT,
+  MAV_STATE_BOOT,
+  MAV_STATE_CALIBRATIN,
+  MAV_STATE_STANDBY,
+  MAV_STATE_ACTIVE,
+  MAV_STATE_CRITICAL,
+  MAV_STATE_EMERGENCY,
+  MAV_STATE_POWEROFF,
+  MAV_STATE_FLIGHT_TERMINATION,
+};
+
 trajectoryPublisher::trajectoryPublisher(const ros::NodeHandle& nh, const ros::NodeHandle& nh_private) :
   nh_(nh),
   nh_private_(nh_private),
@@ -15,6 +28,9 @@ trajectoryPublisher::trajectoryPublisher(const ros::NodeHandle& nh, const ros::N
   referencePub_ = nh_.advertise<geometry_msgs::TwistStamped>("reference/setpoint", 1);
   flatreferencePub_ = nh_.advertise<controller_msgs::FlatTarget>("reference/flatsetpoint", 1);
   rawreferencePub_ = nh_.advertise<mavros_msgs::PositionTarget>("/mavros/setpoint_raw/local", 1);
+  trajreferencePub_ = nh_.advertise<mavros_msgs::Trajectory>("/mavros/trajectory/generated", 10);
+  systemstatusPub_ = nh_.advertise<mavros_msgs::CompanionProcessStatus>("/mavros/companion_process/status", 1);
+
   motionselectorSub_ = nh_.subscribe("/trajectory_publisher/motionselector", 1, &trajectoryPublisher::motionselectorCallback, this,ros::TransportHints().tcpNoDelay());
   mavposeSub_ = nh_.subscribe("/mavros/local_position/pose", 1, &trajectoryPublisher::mavposeCallback, this,ros::TransportHints().tcpNoDelay());
   mavtwistSub_ = nh_.subscribe("/mavros/local_position/velocity", 1, &trajectoryPublisher::mavtwistCallback, this,ros::TransportHints().tcpNoDelay());
@@ -165,6 +181,34 @@ void trajectoryPublisher::pubrefSetpointRaw(){
   rawreferencePub_.publish(msg);
 }
 
+void trajectoryPublisher::pubSetpointTraj() {
+  mavros_msgs::Trajectory msg;
+  msg.header.stamp = ros::Time::now();
+  msg.header.frame_id = "map";
+  msg.type = uint8_t(0);
+  mavros_msgs::PositionTarget point_msg;
+  point_msg.position.x = p_targ(0);
+  point_msg.position.y = p_targ(1);
+  point_msg.position.z = p_targ(2);
+  point_msg.velocity.x = v_targ(0);
+  point_msg.velocity.y = v_targ(1);
+  point_msg.velocity.z = v_targ(2);
+
+  msg.point_1 = point_msg;
+
+  trajreferencePub_.publish(msg);
+
+}
+
+void trajectoryPublisher::pubSystemStatus() {
+  mavros_msgs::CompanionProcessStatus msg;
+
+  msg.header.stamp = ros::Time::now();
+  msg.component = 196;  // MAV_COMPONENT_ID_AVOIDANCE
+  msg.state = (int) MAV_STATE::MAV_STATE_ACTIVE;
+
+  systemstatusPub_.publish(msg);
+}
 
 void trajectoryPublisher::loopCallback(const ros::TimerEvent& event){
   //Slow Loop publishing trajectory information
@@ -180,8 +224,12 @@ void trajectoryPublisher::refCallback(const ros::TimerEvent& event){
     case REF_TWIST :
       pubrefState();
       break;
-    case REF_SETPOINTRAW :
+    case REF_SETPOINT_RAW :
       pubrefSetpointRaw();
+      break;
+    case REF_SETPOINT_TRAJ :
+      pubSetpointTraj();
+      pubSystemStatus();
       break;
     default : 
       pubflatrefState();
