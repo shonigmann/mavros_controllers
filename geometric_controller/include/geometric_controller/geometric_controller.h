@@ -130,6 +130,7 @@ class geometricCtrl
     Eigen::Vector4d quatMultiplication(const Eigen::Vector4d &q, const Eigen::Vector4d &p);
     Eigen::Vector4d attcontroller(const Eigen::Vector4d &ref_att, const Eigen::Vector3d &ref_acc, Eigen::Vector4d &curr_att);
     Eigen::Vector4d geometric_attcontroller(const Eigen::Vector4d &ref_att, const Eigen::Vector3d &ref_acc, Eigen::Vector4d &curr_att);
+    Eigen::Vector4d jerkcontroller(Eigen::Vector3d &ref_jerk, Eigen::Vector3d &ref_acc, Eigen::Vector3d &ref_vel, Eigen::Vector4d &curr_att);
 
     inline Eigen::Vector3d toEigen(const geometry_msgs::Point& p) {
       Eigen::Vector3d ev3(p.x, p.y, p.z);
