@@ -1,0 +1,1 @@
+/usr/bin/c++ -fPIC -O3 -DNDEBUG -shared -Wl,-soname,libgtest.so -o libgtest.so CMakeFiles/gtest.dir/src/gtest-all.cc.o   -L/home/simon/catkin_ws/src/mavros_controllers/trajectory_publisher/gtest/googlemock/gtest/src  -Wl,-rpath,/home/simon/catkin_ws/src/mavros_controllers/trajectory_publisher/gtest/googlemock/gtest/src -lpthread 

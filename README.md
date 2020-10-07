@@ -1,5 +1,5 @@
 # mavros_controllers
-[![Build Test](https://github.com/Jaeyoung-Lim/mavros_controllers/workflows/Build%20Test/badge.svg)](https://github.com/Jaeyoung-Lim/mavros_controllers/actions?query=workflow%3A%22Build+Test%22) [![DOI](https://zenodo.org/badge/140596755.svg)](https://zenodo.org/badge/latestdoi/140596755)
+![Build Test](https://github.com/Jaeyoung-Lim/mavros_controllers/workflows/Build%20Test/badge.svg) [![DOI](https://zenodo.org/badge/140596755.svg)](https://zenodo.org/badge/latestdoi/140596755)
 
 Controllers for controlling MAVs using the [mavros](https://github.com/mavlink/mavros) package in OFFBOARD mode.
 
@@ -10,9 +10,7 @@ The repository contains controllers for controlling MAVs using the mavros packag
 - controller_msgs: custom message definitions
 - trajectory_publisher: Node publishing setpoints as states from motion primitives / trajectories for the controller to follow.
 
-[![Multiple drone](https://user-images.githubusercontent.com/5248102/87020057-a3e25200-c1d3-11ea-9f76-cd010cb8329a.gif)](https://user-images.githubusercontent.com/5248102/87020057-a3e25200-c1d3-11ea-9f76-cd010cb8329a.gif)
-
-[![Hovering drone](https://img.youtube.com/vi/FRaPGjX9m-c/0.jpg)](https://youtu.be/FRaPGjX9m-c "Hovering done")
+[![Hovering done](https://img.youtube.com/vi/FRaPGjX9m-c/0.jpg)](https://youtu.be/FRaPGjX9m-c "Hovering done")
 
 [![Circular trajectory tracking](https://img.youtube.com/vi/IEyocdnlYw0/0.jpg)](https://youtu.be/IEyocdnlYw0 "Circular trajectory tracking")
 
@@ -51,10 +49,6 @@ This folder will probably be already created since the previous process would ha
 
 ```bash
 mkdir -p ~/catkin_ws/src
-cd ~/catkin_ws
-catkin init
-catkin config --merge-devel
-wstool init
 ```
 
 ###### Clone this repository
